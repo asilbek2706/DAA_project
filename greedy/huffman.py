@@ -1,76 +1,38 @@
-import heapq
-from collections import Counter
+import random
 
-class Node:
-    def __init__(self, char, freq):
-        self.char = char
-        self.freq = freq
-        self.left = None
-        self.right = None
 
-    # Define comparison operators for heapq to handle Node objects
-    def __lt__(self, other):
-        return self.freq < other.freq
-
-def huffman_coding(data):
+def quick_sort(arr):
     """
-    Huffman Coding algorithm for data compression.
-    
-    Args:
-    data: The string of characters to encode.
-    
-    Returns:
-    A dictionary of character-to-Huffman-code mappings.
+    Tezkor saralash (Quick Sort) algoritmi.
     """
-    if not data:
-        return {}
+    # 1. Asosiy shart: Agar ro'yxatda 1 ta yoki 0 ta element bo'lsa,
+    # u allaqachon saralangan bo'ladi va uni to'g'ridan-to'g'ri qaytaramiz.
+    if len(arr) <= 1:
+        return arr
 
-    # Calculate frequency of each character
-    frequency = Counter(data)
-    
-    # Create a priority queue of nodes
-    heap = [Node(char, freq) for char, freq in frequency.items()]
-    heapq.heapify(heap)
-    
-    # Build the Huffman tree
-    while len(heap) > 1:
-        node1 = heapq.heappop(heap)
-        node2 = heapq.heappop(heap)
-        
-        merged = Node(None, node1.freq + node2.freq)
-        merged.left = node1
-        merged.right = node2
-        
-        heapq.heappush(heap, merged)
-        
-    # Generate Huffman codes from the tree
-    root = heap[0]
-    codes = {}
-    
-    def generate_codes(node, current_code):
-        if node is None:
-            return
-            
-        if node.char is not None:
-            codes[node.char] = current_code
-            return
-            
-        generate_codes(node.left, current_code + "0")
-        generate_codes(node.right, current_code + "1")
-        
-    generate_codes(root, "")
-    
-    # Special case for a single character
-    if len(frequency) == 1:
-        char = list(frequency.keys())[0]
-        codes[char] = "0"
+    # 2. Tayanch element (Pivot) tanlash:
+    # Ro'yxat ichidan tasodifiy bitta elementni "tayanch" (orta nuqta) qilib olamiz.
+    # Bu yomon holatlardan (Worst-case) qochishga yordam beradi.
+    pivot = random.choice(arr)
 
-    return codes
+    # 3. Uchta guruhga ajratish (List Comprehension orqali):
+    # left: Tayanch elementdan kichik bo'lgan barcha sonlar
+    left = [x for x in arr if x < pivot]
 
+    # middle: Tayanch elementga teng bo'lgan barcha sonlar
+    middle = [x for x in arr if x == pivot]
+
+    # right: Tayanch elementdan katta bo'lgan barcha sonlar
+    right = [x for x in arr if x > pivot]
+
+    # 4. Rekursiya va Birlashtirish:
+    # Kichiklar (left) va kattalar (right) guruhini yana qaytadan quick_sort'ga beramiz.
+    # Oxirida ularni tartib bilan [kichiklar] + [tenglar] + [kattalar] qilib yopishtiramiz.
+    return quick_sort(left) + middle + quick_sort(right)
+
+
+# Dasturni ishga tushirish qismi
 if __name__ == "__main__":
-    # Example usage
-    data = "huffman coding example"
-    codes = huffman_coding(data)
-    print("Huffman Codes:", codes)
-    encoded_data = "".join(codes[char] for char in data)
-    print("Encoded Data:", encoded_data)
+    arr = [38, 27, 43, 3, 9, 82, 10]
+    print("Asl ro'yxat:", arr)
+    print("Saralangan ro'yxat:", quick_sort(arr))
